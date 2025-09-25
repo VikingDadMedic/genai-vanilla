@@ -1,0 +1,218 @@
+version: '3.8'
+
+# ACI Self-Hosted Integration for GenAI Vanilla Stack
+# This compose file integrates the open-source ACI platform
+
+services:
+  # ACI Backend API Server
+  aci-backend:
+    build:
+      context: ./aci-backend
+      dockerfile: Dockerfile
+    container_name: ${PROJECT_NAME}-aci-backend
+    restart: unless-stopped
+    environment:
+      # Database Configuration (using existing Supabase)
+      - SERVER_DB_SCHEME=postgresql+psycopg
+      - SERVER_DB_USER=${SUPABASE_DB_APP_USER}
+      - SERVER_DB_PASSWORD=${SUPABASE_DB_APP_PASSWORD}
+      - SERVER_DB_HOST=supabase-db
+      - SERVER_DB_PORT=5432
+      - SERVER_DB_NAME=postgres
+      - SERVER_DB_SCHEMA=aci
+      
+      # Authentication (adapted for Supabase)
+      - SERVER_SIGNING_KEY=${SUPABASE_JWT_SECRET}
+      - SERVER_JWT_ALGORITHM=HS256
+      - SERVER_JWT_ACCESS_TOKEN_EXPIRE_MINUTES=1440
+      - USE_SUPABASE_AUTH=true
+      - SUPABASE_URL=http://supabase-api:${SUPABASE_API_PORT}
+      - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
+      - SUPABASE_SERVICE_KEY=${SUPABASE_SERVICE_KEY}
+      
+      # OpenAI Configuration
+      - SERVER_OPENAI_API_KEY=${OPENAI_API_KEY}
+      - SERVER_OPENAI_EMBEDDING_MODEL=text-embedding-3-small
+      - SERVER_OPENAI_EMBEDDING_DIMENSION=1024
+      
+      # Server Configuration
+      - SERVER_ENVIRONMENT=local
+      - SERVER_REDIRECT_URI_BASE=http://localhost:${ACI_BACKEND_PORT:-63026}
+      - SERVER_APPLICATION_LOAD_BALANCER_DNS=localhost
+      - SERVER_RATE_LIMIT_IP_PER_SECOND=100
+      - SERVER_RATE_LIMIT_IP_PER_DAY=100000
+      - SERVER_PROJECT_DAILY_QUOTA=100000
+      
+      # Encryption Configuration
+      - COMMON_AWS_REGION=us-east-1
+      - COMMON_AWS_ENDPOINT_URL=http://localstack-kms:4566
+      - COMMON_KEY_ENCRYPTION_KEY_ARN=arn:aws:kms:us-east-1:000000000000:key/aci-encryption
+      - COMMON_API_KEY_HASHING_SECRET=${ACI_API_KEY_SECRET:-5ef74d594f5edf1f98219ddfeb79056cb9ab8198d11820791c407befc5075166}
+      
+      # AWS Credentials for LocalStack
+      - AWS_ACCESS_KEY_ID=dummy
+      - AWS_SECRET_ACCESS_KEY=dummy
+    ports:
+      - "${ACI_BACKEND_PORT:-63026}:8000"
+    networks:
+      - backend-bridge-network
+    volumes:
+      - ./aci-backend/aci:/app/aci
+      - ./aci-backend/apps:/app/apps
+      - aci-backend-data:/app/data
+    depends_on:
+      - supabase-db
+      - localstack-kms
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      replicas: ${ACI_BACKEND_SCALE:-1}
+
+  # ACI Frontend Portal
+  aci-frontend:
+    build:
+      context: ./aci-frontend
+      dockerfile: Dockerfile
+    container_name: ${PROJECT_NAME}-aci-frontend
+    restart: unless-stopped
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:${ACI_BACKEND_PORT:-63026}
+      - NEXT_PUBLIC_SUPABASE_URL=http://localhost:${SUPABASE_API_PORT}
+      - NEXT_PUBLIC_SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
+      - NEXT_PUBLIC_REDIRECT_URI=http://localhost:${ACI_FRONTEND_PORT:-63027}
+      - NODE_ENV=production
+    ports:
+      - "${ACI_FRONTEND_PORT:-63027}:3000"
+    networks:
+      - backend-bridge-network
+    depends_on:
+      - aci-backend
+    deploy:
+      replicas: ${ACI_FRONTEND_SCALE:-1}
+
+  # LocalStack for KMS encryption (lightweight alternative to AWS KMS)
+  localstack-kms:
+    image: localstack/localstack:latest
+    container_name: ${PROJECT_NAME}-localstack-kms
+    restart: unless-stopped
+    environment:
+      - SERVICES=kms
+      - DEBUG=0
+      - DATA_DIR=/var/lib/localstack/data
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - LS_LOG=warn
+    ports:
+      - "${LOCALSTACK_PORT:-63030}:4566"
+    networks:
+      - backend-bridge-network
+    volumes:
+      - ./aci-integration/scripts/create-kms-key.sh:/etc/localstack/init/ready.d/create-kms-key.sh
+      - localstack-data:/var/lib/localstack
+      - /var/run/docker.sock:/var/run/docker.sock
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4566/_localstack/health"]
+      interval: 15s
+      timeout: 10s
+      retries: 3
+    deploy:
+      replicas: ${LOCALSTACK_SCALE:-1}
+
+  # ACI MCP Apps Server - Direct tool access
+  aci-mcp-apps:
+    build:
+      context: ./aci-mcp
+      dockerfile: Dockerfile
+    container_name: ${PROJECT_NAME}-aci-mcp-apps
+    restart: unless-stopped
+    command: [
+      "apps-server",
+      "--apps", "${ACI_MCP_APPS:-GITHUB,GITLAB,VERCEL,SUPABASE,CLOUDFLARE,DOCKER}",
+      "--transport", "sse",
+      "--port", "8100",
+      "--backend-url", "http://aci-backend:8000"
+    ]
+    environment:
+      - ACI_BACKEND_URL=http://aci-backend:8000
+      - LOG_LEVEL=${MCP_LOG_LEVEL:-INFO}
+    ports:
+      - "${ACI_MCP_APPS_PORT:-63028}:8100"
+    networks:
+      - backend-bridge-network
+    depends_on:
+      - aci-backend
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8100/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      replicas: ${ACI_MCP_APPS_SCALE:-1}
+
+  # ACI MCP Unified Server - Dynamic tool discovery
+  aci-mcp-unified:
+    build:
+      context: ./aci-mcp
+      dockerfile: Dockerfile
+    container_name: ${PROJECT_NAME}-aci-mcp-unified
+    restart: unless-stopped
+    command: [
+      "unified-server",
+      "--transport", "sse",
+      "--port", "8101",
+      "--backend-url", "http://aci-backend:8000"
+    ]
+    environment:
+      - ACI_BACKEND_URL=http://aci-backend:8000
+      - LOG_LEVEL=${MCP_LOG_LEVEL:-INFO}
+    ports:
+      - "${ACI_MCP_UNIFIED_PORT:-63029}:8101"
+    networks:
+      - backend-bridge-network
+    depends_on:
+      - aci-backend
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8101/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      replicas: ${ACI_MCP_UNIFIED_SCALE:-1}
+
+  # ACI Database Migrator (one-time setup)
+  aci-db-migrator:
+    build:
+      context: ./aci-backend
+      dockerfile: Dockerfile.migrator
+    container_name: ${PROJECT_NAME}-aci-migrator
+    environment:
+      - ALEMBIC_DB_HOST=supabase-db
+      - ALEMBIC_DB_PORT=5432
+      - ALEMBIC_DB_USER=${SUPABASE_DB_APP_USER}
+      - ALEMBIC_DB_PASSWORD=${SUPABASE_DB_APP_PASSWORD}
+      - ALEMBIC_DB_NAME=postgres
+      - ALEMBIC_DB_SCHEMA=aci
+    networks:
+      - backend-bridge-network
+    depends_on:
+      - supabase-db
+    command: >
+      sh -c "
+        echo 'Waiting for database...' &&
+        sleep 5 &&
+        echo 'Running ACI migrations...' &&
+        alembic upgrade head &&
+        echo 'Migrations complete!'
+      "
+    deploy:
+      replicas: ${ACI_MIGRATOR_SCALE:-0}  # Set to 1 for initial setup
+
+volumes:
+  aci-backend-data:
+  localstack-data:
+
+networks:
+  backend-bridge-network:
+    external: true

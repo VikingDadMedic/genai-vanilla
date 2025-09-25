@@ -1,0 +1,134 @@
+# Kong Gateway Routes for ACI Platform
+# Add these routes to enable ACI services through Kong Gateway
+
+_format_version: "3.0"
+
+services:
+  # ACI Backend API Service
+  - name: aci-backend
+    url: http://aci-backend:8000
+    routes:
+      - name: aci-backend-route
+        paths:
+          - /aci/api
+        strip_path: true
+        methods:
+          - GET
+          - POST
+          - PUT
+          - DELETE
+          - PATCH
+          - OPTIONS
+    plugins:
+      - name: cors
+        config:
+          origins:
+            - http://localhost:63027
+            - http://localhost:63015
+            - http://localhost:63017
+          methods:
+            - GET
+            - POST
+            - PUT
+            - DELETE
+            - PATCH
+            - OPTIONS
+          headers:
+            - Accept
+            - Accept-Version
+            - Content-Length
+            - Content-MD5
+            - Content-Type
+            - Date
+            - X-Auth-Token
+            - Authorization
+          exposed_headers:
+            - X-Auth-Token
+          credentials: true
+          max_age: 3600
+
+  # ACI Portal Frontend
+  - name: aci-portal
+    url: http://aci-frontend:3000
+    routes:
+      - name: aci-portal-route
+        paths:
+          - /aci/portal
+        strip_path: true
+
+  # MCP Apps Server
+  - name: mcp-apps
+    url: http://aci-mcp-apps:8100
+    routes:
+      - name: mcp-apps-route
+        paths:
+          - /mcp/apps
+        strip_path: true
+        methods:
+          - GET
+          - POST
+    plugins:
+      - name: rate-limiting
+        config:
+          minute: 100
+          hour: 1000
+
+  # MCP Unified Server
+  - name: mcp-unified
+    url: http://aci-mcp-unified:8101
+    routes:
+      - name: mcp-unified-route
+        paths:
+          - /mcp/unified
+        strip_path: true
+        methods:
+          - GET
+          - POST
+    plugins:
+      - name: rate-limiting
+        config:
+          minute: 100
+          hour: 1000
+
+  # Health Check Endpoints
+  - name: aci-health
+    url: http://aci-backend:8000/v1/health
+    routes:
+      - name: aci-health-route
+        paths:
+          - /health/aci
+        strip_path: false
+        methods:
+          - GET
+
+# Rate limiting for ACI services
+plugins:
+  - name: rate-limiting
+    service: aci-backend
+    config:
+      second: 10
+      minute: 100
+      hour: 1000
+      policy: local
+
+# Request size limiting
+  - name: request-size-limiting
+    service: aci-backend
+    config:
+      allowed_payload_size: 10
+      size_unit: megabytes
+
+# Basic authentication (optional - configure as needed)
+# - name: basic-auth
+#   service: aci-backend
+#   config:
+#     hide_credentials: true
+
+# JWT authentication (uses Supabase JWT)
+  - name: jwt
+    service: aci-backend
+    config:
+      secret_is_base64: false
+      key_claim_name: iss
+      claims_to_verify:
+        - exp

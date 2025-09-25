@@ -1,0 +1,498 @@
+{
+  "name": "n8n-nodes-aci",
+  "version": "1.0.0",
+  "description": "ACI tool integration nodes for n8n workflows",
+  "nodes": [
+    {
+      "displayName": "ACI Tool Executor",
+      "name": "aciToolExecutor",
+      "icon": "file:aci.svg",
+      "group": ["transform"],
+      "version": 1,
+      "description": "Execute any ACI tool from 600+ integrations",
+      "defaults": {
+        "name": "ACI Tool"
+      },
+      "inputs": ["main"],
+      "outputs": ["main"],
+      "credentials": [
+        {
+          "name": "aciApi",
+          "required": false
+        }
+      ],
+      "properties": [
+        {
+          "displayName": "Operation",
+          "name": "operation",
+          "type": "options",
+          "noDataExpression": true,
+          "options": [
+            {
+              "name": "Execute Tool",
+              "value": "execute"
+            },
+            {
+              "name": "Search Tools",
+              "value": "search"
+            },
+            {
+              "name": "List Apps",
+              "value": "listApps"
+            },
+            {
+              "name": "Get App Functions",
+              "value": "getFunctions"
+            }
+          ],
+          "default": "execute"
+        },
+        {
+          "displayName": "App Name",
+          "name": "appName",
+          "type": "options",
+          "typeOptions": {
+            "loadOptionsMethod": "getApps"
+          },
+          "default": "",
+          "required": true,
+          "displayOptions": {
+            "show": {
+              "operation": ["execute", "getFunctions"]
+            }
+          },
+          "description": "Select the app containing the tool"
+        },
+        {
+          "displayName": "Function Name",
+          "name": "functionName",
+          "type": "options",
+          "typeOptions": {
+            "loadOptionsMethod": "getFunctions",
+            "loadOptionsDependsOn": ["appName"]
+          },
+          "default": "",
+          "required": true,
+          "displayOptions": {
+            "show": {
+              "operation": ["execute"]
+            }
+          },
+          "description": "Select the function to execute"
+        },
+        {
+          "displayName": "Parameters",
+          "name": "parameters",
+          "type": "json",
+          "default": "{}",
+          "displayOptions": {
+            "show": {
+              "operation": ["execute"]
+            }
+          },
+          "description": "JSON parameters for the tool execution"
+        },
+        {
+          "displayName": "Search Query",
+          "name": "searchQuery",
+          "type": "string",
+          "default": "",
+          "displayOptions": {
+            "show": {
+              "operation": ["search"]
+            }
+          },
+          "description": "Search for relevant tools"
+        },
+        {
+          "displayName": "Max Results",
+          "name": "maxResults",
+          "type": "number",
+          "default": 5,
+          "displayOptions": {
+            "show": {
+              "operation": ["search"]
+            }
+          },
+          "description": "Maximum number of search results"
+        }
+      ]
+    },
+    {
+      "displayName": "ACI GitHub",
+      "name": "aciGitHub",
+      "icon": "file:github.svg",
+      "group": ["transform"],
+      "version": 1,
+      "description": "GitHub operations via ACI",
+      "defaults": {
+        "name": "ACI GitHub"
+      },
+      "inputs": ["main"],
+      "outputs": ["main"],
+      "properties": [
+        {
+          "displayName": "Resource",
+          "name": "resource",
+          "type": "options",
+          "noDataExpression": true,
+          "options": [
+            {
+              "name": "Repository",
+              "value": "repository"
+            },
+            {
+              "name": "Issue",
+              "value": "issue"
+            },
+            {
+              "name": "Pull Request",
+              "value": "pullRequest"
+            },
+            {
+              "name": "Workflow",
+              "value": "workflow"
+            }
+          ],
+          "default": "repository"
+        },
+        {
+          "displayName": "Operation",
+          "name": "operation",
+          "type": "options",
+          "noDataExpression": true,
+          "displayOptions": {
+            "show": {
+              "resource": ["repository"]
+            }
+          },
+          "options": [
+            {
+              "name": "Create",
+              "value": "create"
+            },
+            {
+              "name": "Get",
+              "value": "get"
+            },
+            {
+              "name": "List",
+              "value": "list"
+            },
+            {
+              "name": "Delete",
+              "value": "delete"
+            }
+          ],
+          "default": "get"
+        },
+        {
+          "displayName": "Repository Name",
+          "name": "repository",
+          "type": "string",
+          "default": "",
+          "required": true,
+          "description": "Repository name (owner/repo format)"
+        }
+      ]
+    },
+    {
+      "displayName": "ACI Notion",
+      "name": "aciNotion",
+      "icon": "file:notion.svg",
+      "group": ["transform"],
+      "version": 1,
+      "description": "Notion operations via ACI",
+      "defaults": {
+        "name": "ACI Notion"
+      },
+      "inputs": ["main"],
+      "outputs": ["main"],
+      "properties": [
+        {
+          "displayName": "Resource",
+          "name": "resource",
+          "type": "options",
+          "noDataExpression": true,
+          "options": [
+            {
+              "name": "Page",
+              "value": "page"
+            },
+            {
+              "name": "Database",
+              "value": "database"
+            },
+            {
+              "name": "Block",
+              "value": "block"
+            }
+          ],
+          "default": "page"
+        },
+        {
+          "displayName": "Operation",
+          "name": "operation",
+          "type": "options",
+          "noDataExpression": true,
+          "displayOptions": {
+            "show": {
+              "resource": ["page"]
+            }
+          },
+          "options": [
+            {
+              "name": "Create",
+              "value": "create"
+            },
+            {
+              "name": "Get",
+              "value": "get"
+            },
+            {
+              "name": "Update",
+              "value": "update"
+            },
+            {
+              "name": "Search",
+              "value": "search"
+            }
+          ],
+          "default": "create"
+        },
+        {
+          "displayName": "Title",
+          "name": "title",
+          "type": "string",
+          "default": "",
+          "displayOptions": {
+            "show": {
+              "operation": ["create"],
+              "resource": ["page"]
+            }
+          },
+          "description": "Page title"
+        },
+        {
+          "displayName": "Content",
+          "name": "content",
+          "type": "string",
+          "typeOptions": {
+            "rows": 10
+          },
+          "default": "",
+          "displayOptions": {
+            "show": {
+              "operation": ["create", "update"],
+              "resource": ["page"]
+            }
+          },
+          "description": "Page content (Markdown supported)"
+        }
+      ]
+    },
+    {
+      "displayName": "ACI Slack",
+      "name": "aciSlack",
+      "icon": "file:slack.svg",
+      "group": ["transform"],
+      "version": 1,
+      "description": "Slack operations via ACI",
+      "defaults": {
+        "name": "ACI Slack"
+      },
+      "inputs": ["main"],
+      "outputs": ["main"],
+      "properties": [
+        {
+          "displayName": "Resource",
+          "name": "resource",
+          "type": "options",
+          "noDataExpression": true,
+          "options": [
+            {
+              "name": "Message",
+              "value": "message"
+            },
+            {
+              "name": "Channel",
+              "value": "channel"
+            },
+            {
+              "name": "User",
+              "value": "user"
+            }
+          ],
+          "default": "message"
+        },
+        {
+          "displayName": "Operation",
+          "name": "operation",
+          "type": "options",
+          "noDataExpression": true,
+          "displayOptions": {
+            "show": {
+              "resource": ["message"]
+            }
+          },
+          "options": [
+            {
+              "name": "Send",
+              "value": "send"
+            },
+            {
+              "name": "Update",
+              "value": "update"
+            },
+            {
+              "name": "Delete",
+              "value": "delete"
+            }
+          ],
+          "default": "send"
+        },
+        {
+          "displayName": "Channel",
+          "name": "channel",
+          "type": "string",
+          "default": "#general",
+          "displayOptions": {
+            "show": {
+              "resource": ["message"],
+              "operation": ["send"]
+            }
+          },
+          "description": "Channel to send message to"
+        },
+        {
+          "displayName": "Text",
+          "name": "text",
+          "type": "string",
+          "typeOptions": {
+            "rows": 5
+          },
+          "default": "",
+          "displayOptions": {
+            "show": {
+              "resource": ["message"],
+              "operation": ["send", "update"]
+            }
+          },
+          "description": "Message text"
+        }
+      ]
+    },
+    {
+      "displayName": "ACI Vercel",
+      "name": "aciVercel",
+      "icon": "file:vercel.svg",
+      "group": ["transform"],
+      "version": 1,
+      "description": "Vercel deployment operations via ACI",
+      "defaults": {
+        "name": "ACI Vercel"
+      },
+      "inputs": ["main"],
+      "outputs": ["main"],
+      "properties": [
+        {
+          "displayName": "Resource",
+          "name": "resource",
+          "type": "options",
+          "noDataExpression": true,
+          "options": [
+            {
+              "name": "Deployment",
+              "value": "deployment"
+            },
+            {
+              "name": "Project",
+              "value": "project"
+            },
+            {
+              "name": "Domain",
+              "value": "domain"
+            }
+          ],
+          "default": "deployment"
+        },
+        {
+          "displayName": "Operation",
+          "name": "operation",
+          "type": "options",
+          "noDataExpression": true,
+          "displayOptions": {
+            "show": {
+              "resource": ["deployment"]
+            }
+          },
+          "options": [
+            {
+              "name": "Create",
+              "value": "create"
+            },
+            {
+              "name": "Get Status",
+              "value": "getStatus"
+            },
+            {
+              "name": "List",
+              "value": "list"
+            },
+            {
+              "name": "Cancel",
+              "value": "cancel"
+            }
+          ],
+          "default": "create"
+        },
+        {
+          "displayName": "Project Name",
+          "name": "projectName",
+          "type": "string",
+          "default": "",
+          "required": true,
+          "description": "Vercel project name"
+        },
+        {
+          "displayName": "Git URL",
+          "name": "gitUrl",
+          "type": "string",
+          "default": "",
+          "displayOptions": {
+            "show": {
+              "operation": ["create"],
+              "resource": ["deployment"]
+            }
+          },
+          "description": "Git repository URL to deploy"
+        }
+      ]
+    }
+  ],
+  "credentials": [
+    {
+      "name": "aciApi",
+      "displayName": "ACI API",
+      "properties": [
+        {
+          "displayName": "Backend URL",
+          "name": "backendUrl",
+          "type": "string",
+          "default": "http://aci-backend:8000",
+          "description": "URL of the self-hosted ACI backend"
+        },
+        {
+          "displayName": "API Key",
+          "name": "apiKey",
+          "type": "string",
+          "typeOptions": {
+            "password": true
+          },
+          "default": "",
+          "description": "Optional API key for authentication"
+        }
+      ]
+    }
+  ]
+}

@@ -75,7 +75,7 @@ def initialize_config():
             config = {
                 "llm_provider": provider,
                 "local_llm": model_name,
-                "ollama_base_url": os.getenv("OLLAMA_BASE_URL", "http://ollama:11434"),
+                "ollama_base_url": os.getenv("LLM_PROVIDER_BASE_URL", os.getenv("OLLAMA_BASE_URL", "http://ollama:11434")),
                 "search_api": os.getenv("SEARCH_API", "duckduckgo"),
                 "max_web_research_loops": int(os.getenv("MAX_WEB_RESEARCH_LOOPS", "3")),
                 "fetch_full_page": os.getenv("FETCH_FULL_PAGE", "false").lower()
@@ -115,7 +115,7 @@ DATABASE_URL={database_url}
             fallback_config = {
                 "llm_provider": "ollama",
                 "local_llm": "llama3.2",
-                "ollama_base_url": os.getenv("OLLAMA_BASE_URL", "http://ollama:11434"),
+                "ollama_base_url": os.getenv("LLM_PROVIDER_BASE_URL", os.getenv("OLLAMA_BASE_URL", "http://ollama:11434")),
                 "search_api": os.getenv("SEARCH_API", "duckduckgo"),
                 "max_web_research_loops": int(os.getenv("MAX_WEB_RESEARCH_LOOPS", "3")),
                 "fetch_full_page": False,

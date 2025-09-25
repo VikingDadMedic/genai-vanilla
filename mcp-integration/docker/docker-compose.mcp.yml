@@ -1,0 +1,148 @@
+version: '3.8'
+
+services:
+  # ACI.dev Apps MCP Server - Direct access to specific apps
+  aci-mcp-gateway:
+    image: ghcr.io/aipotheosis-labs/aci-mcp:latest
+    container_name: ${PROJECT_NAME}-aci-mcp-gateway
+    restart: unless-stopped
+    command: [
+      "apps-server",
+      "--apps", "${ACI_ENABLED_APPS:-GITHUB,GMAIL,BRAVE_SEARCH}",
+      "--linked-account-owner-id", "${ACI_LINKED_ACCOUNT_ID:-default}",
+      "--transport", "sse",
+      "--port", "8100"
+    ]
+    environment:
+      - ACI_API_KEY=${ACI_API_KEY}
+      - LOG_LEVEL=${MCP_LOG_LEVEL:-INFO}
+    ports:
+      - "${ACI_MCP_PORT:-63022}:8100"
+    networks:
+      - backend-bridge-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8100/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      replicas: ${ACI_MCP_SCALE:-1}
+    volumes:
+      - aci-mcp-cache:/cache
+    labels:
+      - "com.genai.service=mcp"
+      - "com.genai.mcp.type=aci-apps"
+
+  # ACI.dev Unified MCP Server - Dynamic tool discovery
+  aci-mcp-unified:
+    image: ghcr.io/aipotheosis-labs/aci-mcp:latest
+    container_name: ${PROJECT_NAME}-aci-mcp-unified
+    restart: unless-stopped
+    command: [
+      "unified-server",
+      "--linked-account-owner-id", "${ACI_LINKED_ACCOUNT_ID:-default}",
+      "--allowed-apps-only",
+      "--transport", "sse",
+      "--port", "8101"
+    ]
+    environment:
+      - ACI_API_KEY=${ACI_API_KEY}
+      - LOG_LEVEL=${MCP_LOG_LEVEL:-INFO}
+    ports:
+      - "${ACI_MCP_UNIFIED_PORT:-63023}:8101"
+    networks:
+      - backend-bridge-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8101/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      replicas: ${ACI_MCP_UNIFIED_SCALE:-1}
+    volumes:
+      - aci-mcp-unified-cache:/cache
+    labels:
+      - "com.genai.service=mcp"
+      - "com.genai.mcp.type=aci-unified"
+
+  # MCP Router Service - Coordinates between different MCP servers
+  mcp-router:
+    build:
+      context: ./mcp-integration/docker
+      dockerfile: mcp-router.dockerfile
+    container_name: ${PROJECT_NAME}-mcp-router
+    restart: unless-stopped
+    environment:
+      - ACI_MCP_APPS_URL=http://aci-mcp-gateway:8100
+      - ACI_MCP_UNIFIED_URL=http://aci-mcp-unified:8101
+      - OPEN_WEBUI_MCP_URL=http://open-webui-mcp:8200
+      - BACKEND_URL=http://backend:8000
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-redis_password}@redis:6379/2
+      - LOG_LEVEL=${MCP_LOG_LEVEL:-INFO}
+      - ENABLE_MCP_CACHING=${ENABLE_MCP_CACHING:-true}
+      - MCP_CACHE_TTL=${MCP_CACHE_TTL:-300}
+    ports:
+      - "${MCP_ROUTER_PORT:-63025}:8000"
+    networks:
+      - backend-bridge-network
+    depends_on:
+      - aci-mcp-gateway
+      - aci-mcp-unified
+      - redis
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      replicas: ${MCP_ROUTER_SCALE:-1}
+    labels:
+      - "com.genai.service=mcp"
+      - "com.genai.mcp.type=router"
+
+  # Open WebUI MCP Server
+  open-webui-mcp:
+    build:
+      context: ./mcp-integration/docker
+      dockerfile: openwebui-mcp.dockerfile
+    container_name: ${PROJECT_NAME}-open-webui-mcp
+    restart: unless-stopped
+    environment:
+      - BACKEND_URL=http://backend:8000
+      - ACI_MCP_UNIFIED_URL=http://aci-mcp-unified:8101
+      - ACI_MCP_APPS_URL=http://aci-mcp-gateway:8100
+      - OPEN_WEBUI_URL=http://open-web-ui:8080
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-redis_password}@redis:6379/3
+      - LOG_LEVEL=${MCP_LOG_LEVEL:-INFO}
+    ports:
+      - "${OPEN_WEBUI_MCP_PORT:-63024}:8200"
+    networks:
+      - backend-bridge-network
+    depends_on:
+      - open-web-ui
+      - backend
+      - aci-mcp-unified
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8200/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      replicas: ${OPEN_WEBUI_MCP_SCALE:-1}
+    volumes:
+      - ./open-webui/functions:/app/functions:ro
+      - ./open-webui/tools:/app/tools:ro
+    labels:
+      - "com.genai.service=mcp"
+      - "com.genai.mcp.type=open-webui"
+
+volumes:
+  aci-mcp-cache:
+    driver: local
+  aci-mcp-unified-cache:
+    driver: local
+
+networks:
+  backend-bridge-network:
+    external: true
+    name: ${PROJECT_NAME}_backend-bridge-network

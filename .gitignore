@@ -20,7 +20,11 @@ wheels/
 .installed.cfg
 *.egg
 MANIFEST
-
+.env.*
+.env.backup.20250907123321
+.env.backup.20250907123322
+./.env.backup.20250907123321
+/.env.backup.20250907123322
 # Virtual Environment
 .env
 .venv
@@ -99,3 +103,6 @@ tmp/
 
 # Project specific
 CLAUDE.md
+
+# Cursor IDE
+.cursor/

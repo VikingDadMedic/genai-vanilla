@@ -1,0 +1,110 @@
+{
+  "name": "Open-WebUI Research Integration",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "research",
+        "options": {}
+      },
+      "id": "webhook-trigger",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300],
+      "webhookId": "research-webhook"
+    },
+    {
+      "parameters": {
+        "url": "http://searxng:8080/search",
+        "options": {
+          "queryParameters": {
+            "parameter": [
+              {
+                "name": "q",
+                "value": "={{$json[\"query\"]}}"
+              },
+              {
+                "name": "format",
+                "value": "json"
+              }
+            ]
+          }
+        }
+      },
+      "id": "searxng-search",
+      "name": "SearxNG Search",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={{ JSON.stringify({summary: \"Research results for: \" + $node[\"Webhook\"].json[\"query\"] + \"\\n\\n\" + $json[\"results\"].slice(0,3).map(r => \"- \" + r.title + \": \" + r.content).join(\"\\n\"), sources: $json[\"results\"].slice(0,5).map(r => ({title: r.title, url: r.url}))}) }}",
+        "options": {}
+      },
+      "id": "format-results",
+      "name": "Format Results",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "webhook-response",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [850, 300]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "SearxNG Search",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SearxNG Search": {
+      "main": [
+        [
+          {
+            "node": "Format Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Results": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "saveDataSuccessExecution": "all",
+    "saveExecutionProgress": true,
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "1",
+  "meta": {
+    "instanceId": "genai-stack"
+  },
+  "tags": []
+}
