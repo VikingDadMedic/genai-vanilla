@@ -1,0 +1,56 @@
+{
+  "valves_system": {
+    "definition": "Configuration interface for plugins",
+    "types": {
+      "Valves": "Admin-configurable settings",
+      "UserValves": "User-configurable settings per chat session"
+    },
+    "implementation": "Pydantic BaseModel classes",
+    "ui_elements": {
+      "int/float": "Number input",
+      "bool": "Toggle switch",
+      "str": "Text input",
+      "Literal": "Dropdown selection",
+      "enum": "Multi-choice dropdown"
+    }
+  },
+  "hooks_and_methods": {
+    "functions": {
+      "tools": [
+        "main function with parameters"
+      ],
+      "pipe_functions": [
+        "pipe(body: dict)"
+      ],
+      "filter_functions": [
+        "inlet(body: dict)",
+        "outlet(body: dict)",
+        "stream(event: dict)"
+      ],
+      "action_functions": [
+        "action method with custom logic"
+      ]
+    },
+    "pipelines": {
+      "pipe": [
+        "pipe(user_message, model_id, messages, body)"
+      ],
+      "filter": [
+        "inlet(body, user)",
+        "outlet(body, user)"
+      ],
+      "manifold": [
+        "pipelines()",
+        "pipe(user_message, model_id, messages, body)"
+      ]
+    }
+  },
+  "data_structures": {
+    "common_parameters": {
+      "__user__": "Current user context",
+      "__event_emitter__": "Real-time UI updates",
+      "body": "Complete request/response data",
+      "messages": "Chat conversation history"
+    }
+  }
+}

@@ -1,0 +1,6 @@
+Framework,Memory_Type,Storage_Mechanism,Key_Strengths
+Mem0,Multi-level (user/session/agent),Vector + Graph databases,"Automatic memory extraction, contradiction resolution"
+Zep/Graphiti,Temporal knowledge graphs,Dynamic temporal graphs,"Temporal awareness, relationship tracking"
+MemGPT,Hierarchical context management,Virtual context hierarchy,"Context window management, self-editing"
+LangChain Memory,Conversation buffers & summaries,"Various backends (Redis, etc.)","Simple integration, multiple storage options"
+CrewAI,Multi-agent shared memory,Distributed memory pools,"Agent collaboration, role-based memory"

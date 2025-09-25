@@ -1,0 +1,56 @@
+{
+  "functions_setup": {
+    "overview": "Built-in plugin system for Open WebUI",
+    "requirements": [
+      "Open WebUI installation",
+      "Admin access"
+    ],
+    "installation_steps": [
+      "Navigate to Admin Panel > Functions",
+      "Import from community or create custom",
+      "Configure valves/settings",
+      "Enable for specific models or globally",
+      "Test functionality"
+    ],
+    "configuration": {
+      "location": "Admin Panel > Functions",
+      "per_model": "Workspace > Models > Assign Functions",
+      "global": "Functions menu > Global toggle"
+    }
+  },
+  "pipelines_setup": {
+    "overview": "External server for heavy processing and complex workflows",
+    "requirements": [
+      "Docker",
+      "Open WebUI instance",
+      "Network connectivity"
+    ],
+    "installation_steps": [
+      "Run Pipelines container: docker run -d -p 9099:9099 --add-host=host.docker.internal:host-gateway -v pipelines:/app/pipelines --name pipelines --restart always ghcr.io/open-webui/pipelines:main",
+      "Configure Open WebUI connection: Admin Panel > Settings > Connections",
+      "Add API URL: http://localhost:9099 (or host.docker.internal:9099 for Docker)",
+      "Set API key: 0p3n-w3bu!",
+      "Install/manage pipelines: Admin Panel > Settings > Pipelines",
+      "Configure valve settings per pipeline"
+    ],
+    "networking": {
+      "port": "9099",
+      "docker_host": "host.docker.internal",
+      "api_key": "0p3n-w3bu!"
+    }
+  },
+  "development_workflow": {
+    "functions": {
+      "creation": "Built-in code editor in Admin Panel",
+      "testing": "Enable and test in chat interface",
+      "debugging": "Console logs and error messages",
+      "deployment": "Save and enable directly"
+    },
+    "pipelines": {
+      "creation": "External Python files in /pipelines directory",
+      "testing": "Separate server testing environment",
+      "debugging": "Server logs and API responses",
+      "deployment": "File placement and server restart"
+    }
+  }
+}

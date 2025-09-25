@@ -1,0 +1,6 @@
+Category,Key_Principles,Common_Pitfalls,Recommended_Tools
+Memory Architecture,"Multi-layered storage, Temporal awareness, Consolidation mechanisms","Single-layer storage, Ignoring time, No consolidation","Zep/Graphiti, MemGPT, Hierarchical systems"
+Retrieval Design,"Hybrid approaches, Context preservation, Relevance ranking","Over-reliance on similarity, Poor context handling, Relevance issues","Vector DBs + Graphs, Multi-modal search, Ranking algorithms"
+Thought Processing,"Chain-of-thought support, Internal/external modes, Insight generation","Rigid processing, Missing introspection, Linear thinking only","CoT frameworks, ReAct, Introspection tools"
+System Integration,"Modular design, API consistency, Interoperability","Tight coupling, Inconsistent interfaces, Poor abstraction","LangChain, Microservices, API gateways"
+Performance Optimization,"Caching strategies, Parallel processing, Resource management","No caching, Sequential processing, Resource leaks","Redis caching, Parallel frameworks, Monitoring tools"

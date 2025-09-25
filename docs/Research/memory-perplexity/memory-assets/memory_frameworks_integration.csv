@@ -1,0 +1,9 @@
+Integration_Aspect,Mem0,memU,Memori,Zep_Graphiti
+Setup Complexity,Low,Low,Low,Moderate
+Code Changes Required,Minimal,Minimal,One-line,Moderate
+Infrastructure Needs,Moderate,Low,Low,Moderate
+Learning Curve,Low,Low,Low,Medium
+Maintenance Overhead,Low,Low,Low,Medium
+Vendor Lock-in Risk,Low,Medium,Medium,Low
+Customization Flexibility,High,Medium,Medium,High
+Migration Difficulty,Easy,Moderate,Moderate,Complex

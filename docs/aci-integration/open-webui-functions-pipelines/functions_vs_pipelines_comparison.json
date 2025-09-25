@@ -1,0 +1,32 @@
+{
+  "feature_comparison": {
+    "execution_location": {
+      "functions": "Internal (Open WebUI server)",
+      "pipelines": "External (Separate server)"
+    },
+    "performance": {
+      "functions": "Fast (no network overhead)",
+      "pipelines": "Slower (network calls required)"
+    },
+    "resource_usage": {
+      "functions": "Limited by main server resources",
+      "pipelines": "Can use dedicated server resources"
+    },
+    "complexity_support": {
+      "functions": "Simple to moderate tasks",
+      "pipelines": "Heavy computational tasks"
+    },
+    "scalability": {
+      "functions": "Limited (single server)",
+      "pipelines": "High (distributed architecture)"
+    },
+    "setup_complexity": {
+      "functions": "Simple (built-in)",
+      "pipelines": "Complex (separate server setup)"
+    },
+    "use_case_recommendation": {
+      "functions": "Basic providers, simple filters, quick integrations",
+      "pipelines": "Complex workflows, heavy processing, enterprise deployments"
+    }
+  }
+}

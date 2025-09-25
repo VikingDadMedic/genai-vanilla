@@ -1,0 +1,5 @@
+Memory_Type,Human_Function,AI_Implementation,Key_Challenges
+Working Memory,Active processing and manipulation of current information,"Context windows, attention mechanisms, scratchpads","Context length limits, computational overhead"
+Episodic Memory,Personal experiences with time/place context,"Experience logs, interaction history, RAG with temporal data","Storage efficiency, relevance filtering, privacy"
+Semantic Memory,General facts and concepts without personal context,"Knowledge bases, vector embeddings, fact databases","Knowledge updating, consistency, hallucination prevention"
+Procedural Memory,Skills and procedures (how-to knowledge),"Model weights, fine-tuned behaviors, learned patterns","Transfer learning, catastrophic forgetting"

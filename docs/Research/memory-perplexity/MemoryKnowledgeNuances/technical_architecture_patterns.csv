@@ -1,0 +1,6 @@
+Architecture_Pattern,Core_Technology,Use_Cases,Implementation_Examples
+Vector Database + RAG,"Embeddings, Semantic search, Vector similarity","Document QA, Conversational AI, Content recommendations","ChromaDB, Pinecone, Weaviate with LangChain"
+Knowledge Graph + GNN,"Graph neural networks, Node embeddings, Relationship modeling","Complex reasoning, Entity relationships, Multi-hop inference","Neo4j + PyTorch Geometric, NetworkX, DGL"
+Hierarchical Memory Systems,"Multi-tier storage, Context management, Memory consolidation","Long-term context, Agent memory, Progressive learning","MemGPT, Hierarchical attention mechanisms"
+Temporal Memory Graphs,"Time-aware graphs, Event tracking, Temporal reasoning","Event sequences, Temporal reasoning, Change tracking","Zep/Graphiti, Temporal graph networks"
+Hybrid Retrieval Systems,"Combined vector/graph/keyword search, Multi-modal retrieval","Complex queries, Multi-source data, Comprehensive retrieval","Elasticsearch + vector search, Multi-stage retrieval"

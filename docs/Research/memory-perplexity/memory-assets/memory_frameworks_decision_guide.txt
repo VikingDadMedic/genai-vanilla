@@ -1,0 +1,28 @@
+
+CHOOSE MEM0 IF:
+- Need general-purpose memory for diverse AI applications
+- Want proven performance with research validation
+- Require flexible deployment (self-hosted + managed)
+- Building customer support, healthcare, or learning assistants
+- Need strong community support and ecosystem
+
+CHOOSE memU IF:
+- Building AI companions, role-playing bots, or tutors
+- Want human-like memory evolution and aging
+- Need specialized companion memory patterns
+- Prioritize cost efficiency and accuracy
+- Building consumer-facing AI personalities
+
+CHOOSE MEMORI IF:
+- Building multi-agent systems or workflows
+- Need simple one-line memory integration
+- Want database infrastructure backing
+- Building collaborative AI systems
+- Need rapid prototyping capabilities
+
+CHOOSE ZEP/GRAPHITI IF:
+- Building enterprise AI agents with complex data
+- Need temporal reasoning and relationship modeling
+- Require proven benchmarks on enterprise tasks
+- Building systems with structured + unstructured data
+- Need production-ready graph-based memory

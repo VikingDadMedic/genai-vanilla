@@ -1,0 +1,144 @@
+{
+  "open_webui_architecture": {
+    "core_components": {
+      "frontend": {
+        "technology": "SvelteKit",
+        "description": "Progressive Web App interface",
+        "location": "src/",
+        "features": [
+          "Responsive design",
+          "PWA support",
+          "Real-time communication"
+        ]
+      },
+      "backend": {
+        "technology": "FastAPI",
+        "description": "Asynchronous Python API server",
+        "location": "backend/open_webui/",
+        "features": [
+          "REST API",
+          "WebSocket support",
+          "Authentication",
+          "Role-based access"
+        ]
+      },
+      "database": {
+        "primary": "SQLAlchemy ORM",
+        "legacy": "Peewee ORM (being migrated)",
+        "storage": "SQLite (default), PostgreSQL, MySQL supported",
+        "migrations": "Alembic"
+      },
+      "real_time": {
+        "technology": "Socket.IO",
+        "purpose": "WebSocket communication for streaming",
+        "features": [
+          "Chat streaming",
+          "Real-time notifications"
+        ]
+      },
+      "caching": {
+        "technology": "Redis",
+        "uses": [
+          "Caching",
+          "WebSocket session management",
+          "Background tasks"
+        ]
+      }
+    },
+    "plugin_system": {
+      "functions": {
+        "execution_location": "Open WebUI server (internal)",
+        "performance": "Fast (no network overhead)",
+        "complexity": "Limited by main server resources",
+        "use_cases": [
+          "Simple providers",
+          "Basic filters",
+          "Built-in functionality"
+        ]
+      },
+      "pipelines": {
+        "execution_location": "Separate server (external)",
+        "performance": "Slower (network calls)",
+        "complexity": "High computational tasks supported",
+        "use_cases": [
+          "Heavy processing",
+          "Complex workflows",
+          "Scalable operations"
+        ]
+      }
+    }
+  },
+  "plugin_types": {
+    "tools": {
+      "definition": "Extend LLM capabilities with external data/actions",
+      "execution": "Called by LLM during conversation",
+      "modes": {
+        "default": "Prompt-based tool triggering (compatible with any model)",
+        "native": "Built-in function calling (requires model support)"
+      },
+      "examples": [
+        "Weather API",
+        "Web search",
+        "Calculator",
+        "Database queries"
+      ]
+    },
+    "functions": {
+      "types": {
+        "pipe_function": {
+          "purpose": "Create custom agents/models",
+          "appearance": "Shows as selectable model",
+          "capabilities": [
+            "Multi-model workflows",
+            "Custom logic",
+            "Non-AI integrations"
+          ]
+        },
+        "filter_function": {
+          "purpose": "Modify inputs/outputs",
+          "hooks": [
+            "inlet (pre-LLM)",
+            "outlet (post-LLM)",
+            "stream (during response)"
+          ],
+          "capabilities": [
+            "Content modification",
+            "Logging",
+            "Validation"
+          ]
+        },
+        "action_function": {
+          "purpose": "Add custom buttons to messages",
+          "appearance": "Interactive buttons in chat interface",
+          "capabilities": [
+            "Post-processing",
+            "User interactions",
+            "Custom workflows"
+          ]
+        }
+      }
+    },
+    "pipelines": {
+      "types": {
+        "pipe": {
+          "purpose": "Complete request handling",
+          "behavior": "Takes over entire conversation flow",
+          "implementation": "pipe() method processes user input and returns response"
+        },
+        "filter": {
+          "purpose": "Middleware for request/response processing",
+          "hooks": [
+            "inlet",
+            "outlet"
+          ],
+          "behavior": "Processes data before/after LLM"
+        },
+        "manifold": {
+          "purpose": "Multi-model provider integration",
+          "behavior": "Exposes multiple models from external providers",
+          "implementation": "pipelines() method returns available models"
+        }
+      }
+    }
+  }
+}

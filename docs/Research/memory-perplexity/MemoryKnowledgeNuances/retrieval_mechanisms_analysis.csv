@@ -1,0 +1,6 @@
+Retrieval_Method,Underlying_Technology,Strengths,Limitations
+Semantic Similarity,"Vector embeddings, Cosine similarity, Nearest neighbor search","Semantic understanding, Context awareness, Fuzzy matching","Embedding quality dependency, Computational overhead, Bias in similarity"
+Graph Traversal,"Graph algorithms, Path finding, Relationship following","Relationship modeling, Complex reasoning, Multi-hop inference","Graph construction complexity, Scalability issues, Maintenance overhead"
+Temporal Queries,"Time-based indexing, Temporal reasoning, Event sequences","Time-aware retrieval, Change tracking, Historical context","Temporal modeling challenges, Complex time reasoning, Storage requirements"
+Multi-Modal Search,"Cross-modal embeddings, Multi-modal transformers, Unified representations","Rich representations, Cross-domain search, Unified querying","Alignment challenges, Computational complexity, Training requirements"
+Hybrid Approaches,"Ensemble methods, Multi-stage retrieval, Fusion techniques","Comprehensive coverage, Robust performance, Flexible adaptation","System complexity, Integration challenges, Performance tuning"

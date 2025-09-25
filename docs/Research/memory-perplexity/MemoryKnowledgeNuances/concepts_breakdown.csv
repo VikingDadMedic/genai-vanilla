@@ -1,0 +1,4 @@
+Concept,Definition,Key_Types,AI_Implementation
+Thoughts,"Internal cognitive processes involving reasoning, planning, and conscious reflection","Internal (private reasoning), External (verbal processing), Chain-of-thought, Insight/bridging thoughts","Chain-of-thought prompting, ReAct frameworks, Internal monologue systems"
+Memories,Stored representations of past experiences and learned information,"Working (short-term active), Episodic (personal experiences), Semantic (facts/concepts), Long-term consolidated","RAG systems, Vector databases, Knowledge graphs, Memory consolidation mechanisms"
+Knowledge Retrieval,Process of accessing and utilizing stored information to inform current tasks,"Vector similarity search, Graph traversal, Pattern matching, Contextual associations","Semantic search, Graph neural networks, Hybrid retrieval systems, Multi-modal retrieval"

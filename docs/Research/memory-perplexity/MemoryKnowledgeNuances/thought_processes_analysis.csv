@@ -1,0 +1,6 @@
+Thought_Type,Characteristics,AI_Implementation,Cognitive_Benefits
+Chain-of-Thought,"Sequential reasoning steps, Explicit intermediate steps, Logical progression","CoT prompting, Step-by-step reasoning, Multi-hop inference chains","Improved accuracy, Interpretability, Error reduction"
+Internal Processing,"Private reflection, Internal monologue, Think-then-speak pattern","Hidden reasoning states, Internal scratchpads, Private planning phases","Deep processing, Careful consideration, Quality control"
+External Processing,"Think-aloud processing, Collaborative reasoning, Talk-to-think pattern","Conversational agents, Multi-agent dialogues, Explanation generation","Rapid iteration, Social validation, Collaborative problem-solving"
+Insight/Bridging,"Connection-making, Pattern recognition, Eureka moments, Distant associations","Associative retrieval, Creative connections, Cross-domain reasoning","Creative solutions, Knowledge synthesis, Novel connections"
+Reactive Thoughts,"Immediate responses, Stimulus-driven, Minimal deliberation","Direct response generation, Reflex-like behaviors, Fast inference","Speed, Efficiency, Immediate response capability"
